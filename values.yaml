@@ -1,0 +1,46 @@
+namespace: hbr-keycloak
+
+# Postgres account data, web server certificates, and keycloak admin user
+secrets:
+  postgres:
+    name: postgres-credentials
+    admin:
+      name: postgres
+      password: postgres
+  keycloak:
+    name: keycloak-secrets
+    admin:
+      name: admin
+      password: admin
+
+# Postgres, Keycloak and Ingress deployments
+deployments:
+  securePort: 8443
+  postgres:
+    image:
+      name: postgres:latest
+    db:
+      name: keycloaktest2
+    service:
+      name: postgres
+      port: 5432
+    volume:
+      name: postgres-storage
+      path: /var/lib/postgresql/data
+  keycloak:
+    service:
+      name: keycloak
+      nodePort: 30668      
+    container:
+      image: leejekyun/keycloak:latest
+    ports:
+      containerPort: 8080
+      accessPort: 8443
+
+# PersistenVolume / PersistenVolumeClaims
+pv:
+  name: postgres-pv
+  size: 1Gi
+pvc:
+  name: postgres-pvc
+  size: 1Gi
